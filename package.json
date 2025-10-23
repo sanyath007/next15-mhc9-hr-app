@@ -9,8 +9,13 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@prisma/client": "^6.18.0",
+    "face-api.js": "^0.22.2",
+    "lucide-react": "^0.546.0",
+    "mysql2": "^3.15.3",
     "next": "15.5.3",
     "ollama": "^0.5.18",
+    "prisma": "^6.18.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
