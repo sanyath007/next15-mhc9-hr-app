@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  id              String   @id @default(cuid())
+  name            String
+  email           String   @unique
+  faceDescriptor  Json     // Store the 128D face descriptor
+  profileImage    String?  // Base64 or URL
+  createdAt       DateTime @default(now())
+  
+  attendances     Attendance[]
+}
+
+model Attendance {
+  id          String   @id @default(cuid())
+  employeeId  String
+  employee    Employee @relation(fields: [employeeId], references: [id])
+  checkInTime DateTime @default(now())
+  imageUrl    String?  // Captured photo
+  
+  @@index([employeeId, checkInTime])
+}
