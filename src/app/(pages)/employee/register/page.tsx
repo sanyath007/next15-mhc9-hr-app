@@ -210,7 +210,7 @@ export default function EmployeeRegistration() {
             // await new Promise(resolve => setTimeout(resolve, 2000));
 
             /** In production, use: */
-            const result = await fetch('/api/register-employee', {
+            const result = await fetch('/api/employee/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

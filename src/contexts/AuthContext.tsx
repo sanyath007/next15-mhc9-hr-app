@@ -283,47 +283,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
 	const context = useContext(AuthContext);
 	if (!context) throw new Error('useAuth must be used within an AuthProvider');
+
 	return context;
 }
 
 // ProtectedRoute Component
-export function ProtectedRoute({ children }: { children: ReactNode }) {
-	const { isAuthenticated, isLoading } = useAuth();
-	const router = useRouter();
+// export function ProtectedRoute({ children }: { children: ReactNode }) {
+// 	const { isAuthenticated, isLoading } = useAuth();
+// 	const router = useRouter();
 
-	useEffect(() => {
-		// เพิ่ม flag เพื่อป้องกัน multiple redirects
-		let isMounted = true;
-		
-		if (!isLoading && !isAuthenticated && isMounted) {
-			// ใช้ replace แทน push เพื่อป้องกัน history stack ซ้อน
-			router.replace('/auth/login/');
-		}
+// 	useEffect(() => {
+// 		// เพิ่ม flag เพื่อป้องกัน multiple redirects
+// 		let isMounted = true;
 
-		return () => {
-			isMounted = false;
-		};
-	}, [isAuthenticated, isLoading]); // ลบ router ออกจาก dependencies
+// 		if (!isLoading && !isAuthenticated && isMounted) {
+// 			// ใช้ replace แทน push เพื่อป้องกัน history stack ซ้อน
+// 			router.replace('/login/');
+// 		}
 
-	// Loading state
-	if (isLoading) {
-		return (
-			<div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-				<div className="flex flex-col items-center space-y-4">
-					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-					<p className="text-gray-600 dark:text-gray-300 font-prompt">
-						กำลังตรวจสอบการเข้าสู่ระบบ...
-					</p>
-				</div>
-			</div>
-		);
-	}
+// 		return () => {
+// 			isMounted = false;
+// 		};
+// 	}, [isAuthenticated, isLoading]); // ลบ router ออกจาก dependencies
 
-	// Not authenticated - return null while redirecting
-	if (!isAuthenticated) {
-		return null;
-	}
+// 	// Loading state
+// 	if (isLoading) {
+// 		return (
+// 			<div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+// 				<div className="flex flex-col items-center space-y-4">
+// 					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+// 					<p className="text-gray-600 dark:text-gray-300 font-prompt">
+// 						กำลังตรวจสอบการเข้าสู่ระบบ...
+// 					</p>
+// 				</div>
+// 			</div>
+// 		);
+// 	}
 
-	// Authenticated - render children
-	return <>{children}</>;
-}
+// 	// Not authenticated - return null while redirecting
+// 	if (!isAuthenticated) {
+// 		return null;
+// 	}
+
+// 	// Authenticated - render children
+// 	return <>{children}</>;
+// }

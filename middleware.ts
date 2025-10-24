@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken } from './src/lib/auth';
+import { verifyToken } from '@/lib/auth';
 
 // Define protected routes
 const protectedRoutes = [
@@ -19,7 +19,7 @@ const authRoutes = [
 
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
-    
+
     // Get token from cookies or Authorization header
     const token = request.cookies.get('auth_token')?.value || 
                     request.headers.get('authorization')?.replace('Bearer ', '');
@@ -33,13 +33,14 @@ export function middleware(request: NextRequest) {
 
     // Check if the current path is an auth route
     const isAuthRoute = authRoutes.some(route => 
-        pathname.startsWith(`/auth${route}`) || pathname.startsWith(route)
+        pathname.startsWith(`${route}`) || pathname.startsWith(route)
     );
 
     // Redirect unauthenticated users from protected routes
     if (isProtectedRoute && !isAuthenticated) {
-        const loginUrl = new URL('/auth/login', request.url);
+        const loginUrl = new URL('/login', request.url);
         loginUrl.searchParams.set('redirect', pathname);
+
         return NextResponse.redirect(loginUrl);
     }
 
