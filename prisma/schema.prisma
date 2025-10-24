@@ -14,12 +14,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id              String   @id @default(cuid())
+  username        String   @unique
+  email           String   @unique
+  password        String   // Hashed password
+  name            String
+  role            String   @default("user") // user, admin, manager
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Optional fields for additional user info
+  departmentId    String?
+  subdeptid       String?
+  lineUserId      String?
+  lineDisplayName String?
+  linePictureUrl  String?
+  
+  // Relations
+  employees       Employee[]
+}
+
 model Employee {
   id              String   @id @default(cuid())
   name            String
   email           String   @unique
   faceDescriptor  Json     // Store the 128D face descriptor
   profileImage    String?  // Base64 or URL
+  userId          String?  // Link to User if needed
+  user            User?    @relation(fields: [userId], references: [id])
   createdAt       DateTime @default(now())
   
   attendances     Attendance[]

@@ -1,11 +1,13 @@
 
+import { ProtectedRoute } from '../contexts/AuthContext';
+
 export default function DefaultLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <ProtectedRoute>
       <header className="p-4 border-b border-b-zinc-200">
         <h1 className="text-3xl font-bold">Next 15 Crash Course</h1>
       </header>
@@ -17,6 +19,6 @@ export default function DefaultLayout({
           &copy; {new Date().getFullYear()} Next 15 Crash Course
         </p>
       </footer>
-    </>
+    </ProtectedRoute>
   );
 }
