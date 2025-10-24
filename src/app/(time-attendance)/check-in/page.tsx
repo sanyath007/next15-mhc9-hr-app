@@ -38,8 +38,8 @@ export default function CheckInPage() {
             await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
             await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
             await faceapi.nets.faceExpressionNet.loadFromUri('/models');
-            setModelsLoaded(true);
 
+            setModelsLoaded(true);
         } catch (err) {
             console.error('Error loading models:', err);
             alert('Failed to load face recognition models');
