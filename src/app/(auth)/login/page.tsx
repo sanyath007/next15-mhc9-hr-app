@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '../../../contexts/AuthContext';
-import Image from 'next/image';
 
 export default function LoginPage() {
     const [formData, setFormData] = useState({
@@ -24,24 +23,24 @@ export default function LoginPage() {
         setError('');
 
         try {
-        const result = await login(formData);
-        
-        if (result.success) {
-            router.push(redirectTo);
-        } else {
-            setError(result.message || 'Login failed');
-        }
+            const result = await login(formData);
+            
+            if (result.success) {
+                router.push(redirectTo);
+            } else {
+                setError(result.message || 'Login failed');
+            }
         } catch (err) {
-        setError('An unexpected error occurred');
+            setError('An unexpected error occurred');
         } finally {
-        setIsLoading(false);
+            setIsLoading(false);
         }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData(prev => ({
-        ...prev,
-        [e.target.name]: e.target.value
+            ...prev,
+            [e.target.name]: e.target.value
         }));
     };
 
@@ -72,7 +71,7 @@ export default function LoginPage() {
                             placeholder="Enter your username"
                         />
                     </div>
-                    
+
                     <div>
                         <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                             Password
@@ -108,7 +107,7 @@ export default function LoginPage() {
                             Sign up here
                         </a>
                     </div>
-                
+
                     <div className="mt-2">
                         <a 
                             href="/auth/forgot-password" 

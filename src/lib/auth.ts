@@ -1,6 +1,31 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '../generated/prisma/client';
+import NextAuth from 'next-auth';
+import GitHub from 'next-auth/providers/github';
+import Credentials from 'next-auth/providers/credentials';
+
+export const { auth, handlers, signIn } = NextAuth({
+    providers: [
+        GitHub,
+        Credentials({
+            credentials: {
+                email: {},
+                password: {}
+            },
+            authorize: async (credentials) => {
+                const email = "sanyath007@gmail.com";
+                const password = "123456";
+
+                if (credentials.email === email && credentials.password === password) {
+                    return { email, password };
+                } else {
+                    throw new Error("Invalid credentials.");
+                }
+            },
+        }),
+    ]
+});
 
 const prisma = new PrismaClient();
 

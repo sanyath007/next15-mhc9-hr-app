@@ -10,19 +10,23 @@
   },
   "dependencies": {
     "@prisma/client": "^6.18.0",
+    "@radix-ui/react-slot": "^1.2.3",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
     "bcryptjs": "^3.0.2",
+    "class-variance-authority": "^0.7.1",
     "dotenv": "^17.2.3",
     "face-api.js": "^0.22.2",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.546.0",
     "mysql2": "^3.15.3",
     "next": "15.5.3",
+    "next-auth": "^5.0.0-beta.29",
     "ollama": "^0.5.18",
     "prisma": "^6.18.0",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
