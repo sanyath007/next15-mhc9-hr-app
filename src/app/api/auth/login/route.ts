@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateUser, registerUser, LoginCredentials, RegisterData } from '@/lib/auth';
+import { cookies } from 'next/headers';
 
 export async function POST(request: NextRequest) {
     try {
@@ -21,6 +22,8 @@ export async function POST(request: NextRequest) {
                 { status: 401 }
             );
         }
+
+        (await cookies()).set("auth_token", token, { httpOnly: true, secure: true });
 
         return NextResponse.json({
             ok: true,

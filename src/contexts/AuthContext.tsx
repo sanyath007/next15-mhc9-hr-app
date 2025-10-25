@@ -130,7 +130,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		tokenManager.removeToken();
 		setUser(null);
 		// ใช้ replace แทน push เพื่อป้องกัน back navigation
-		router.replace('/auth/login/');
+		router.replace('/login/');
 	}, [router]);
 
 	// ฟังก์ชันสำหรับตรวจสอบ token validity
