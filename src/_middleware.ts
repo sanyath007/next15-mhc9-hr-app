@@ -7,14 +7,15 @@ const protectedRoutes = [
     '/employee',
     '/product',
     '/users',
-    '/check-in'
 ];
 
 // Define auth routes (redirect if already authenticated)
 const authRoutes = [
     '/login',
     '/register',
-    '/forgot-password'
+    '/forgot-password',
+    '/signin',
+    '/check-in',
 ];
 
 export function middleware(request: NextRequest) {
@@ -23,7 +24,8 @@ export function middleware(request: NextRequest) {
     // Get token from cookies or Authorization header
     const token = request.cookies.get('auth_token')?.value || 
                     request.headers.get('authorization')?.replace('Bearer ', '');
-    
+    console.log(token);
+
     const isAuthenticated = token ? true : false; //verifyToken(token) !== null
 
     // Check if the current path is a protected route
@@ -38,7 +40,7 @@ export function middleware(request: NextRequest) {
 
     // Redirect unauthenticated users from protected routes
     if (isProtectedRoute && !isAuthenticated) {
-        const loginUrl = new URL('/login', request.url);
+        const loginUrl = new URL('/signin', request.url);
         loginUrl.searchParams.set('redirect', pathname);
 
         return NextResponse.redirect(loginUrl);
