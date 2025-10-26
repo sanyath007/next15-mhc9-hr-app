@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import Chat from "@/components/Chat";
+import { SignOut } from "@/components/sign-out";
+// import Chat from "@/components/Chat";
 
 export default async function Home() {
     const session = await auth();
@@ -20,6 +21,7 @@ export default async function Home() {
                     priority
                 />
 
+                <SignOut />
                 {/* <Chat /> */}
 
             </main>
