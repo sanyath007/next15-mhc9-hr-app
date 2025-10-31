@@ -24,7 +24,7 @@ export const { auth, handlers, signIn } = NextAuth({
             },
             authorize: async (credentials) => {
                 const user = await db.user.findUnique({
-                    where: { email: credentials.email },
+                    where: { email: credentials.email as string },
                 });
 
                 if (!user) {
@@ -32,7 +32,7 @@ export const { auth, handlers, signIn } = NextAuth({
                 }
 
                 
-                const isValidPassword = await verifyPassword(credentials.password, user.password);
+                const isValidPassword = await verifyPassword(credentials.password as string, user.password);
                 if (!isValidPassword) {
                     throw new Error("Invalid password.");
                 }
@@ -154,7 +154,7 @@ export const registerUser = async (data: RegisterData): Promise<{ user: UserPayl
         const hashedPassword = await hashPassword(data.password);
 
         // Create user
-        const user = await prisma.user.create({
+        const user = await db.user.create({
             data: {
                 username: data.username,
                 email: data.email,
