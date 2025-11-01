@@ -4,11 +4,17 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Camera, UserPlus, XCircle, CheckCircle, AlertCircle, Trash2, Eye } from 'lucide-react';
 import * as faceapi from 'face-api.js';
 
+interface CapturedImage {
+    image: any;
+    descriptor: any;
+    timestamp: string;
+};
+
 export default function EmployeeRegistrationForm() {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const [stream, setStream] = useState(null);
-    const [capturedImages, setCapturedImages] = useState([]);
+    const [capturedImages, setCapturedImages] = useState<CapturedImage[]>([]);
     const [isCameraActive, setIsCameraActive] = useState(false);
     const [faceDetected, setFaceDetected] = useState(false);
     const [modelsLoaded, setModelsLoaded] = useState(false);
@@ -37,13 +43,7 @@ export default function EmployeeRegistrationForm() {
         try {
             console.log('Loading face-api.js models...');
 
-            /** Simulate loading time */
-            // await new Promise(resolve => setTimeout(resolve, 2000));
-
-            // setModelsLoaded(true);
-            // console.log('Models loaded successfully');
-
-            /** In production, use: */
+            await faceapi.nets.ssdMobilenetv1.loadFromUri('/models');
             await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
             await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
             await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
@@ -75,6 +75,16 @@ export default function EmployeeRegistrationForm() {
         } catch (err) {
             console.error('Error accessing camera:', err);
             alert('Unable to access camera. Please check permissions.');
+        }
+    };
+
+    const stopCamera = () => {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+
+            setStream(null);
+            setIsCameraActive(false);
+            setFaceDetected(false);
         }
     };
 
@@ -119,19 +129,11 @@ export default function EmployeeRegistrationForm() {
         }
     };
 
-    const stopCamera = () => {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-
-            setStream(null);
-            setIsCameraActive(false);
-            setFaceDetected(false);
-        }
-    };
-
+    // Capture photo
     const capturePhoto = async () => {
         if (videoRef.current && canvasRef.current && modelsLoaded) {
             setIsProcessing(true);
+
             const video = videoRef.current;
             const canvas = canvasRef.current;
             const context = canvas.getContext('2d');
@@ -142,14 +144,21 @@ export default function EmployeeRegistrationForm() {
 
             const imageData = canvas.toDataURL('image/png');
 
-            await new Promise(resolve => setTimeout(resolve, 500));
-            const faceDescriptor = Array.from({ length: 128 }, () => Math.random());
+            const detections = await faceapi
+                .detectSingleFace(video)
+                .withFaceLandmarks()
+                .withFaceDescriptor();
 
-            setCapturedImages([...capturedImages, { 
-                image: imageData, 
-                descriptor: faceDescriptor,
-                timestamp: new Date().toISOString()
-            }]);
+            if (detections) {
+                const faceDescriptor = detections.descriptor;
+
+                setCapturedImages([...capturedImages, { 
+                    image: imageData, 
+                    descriptor: Array.from(faceDescriptor),
+                    timestamp: new Date().toISOString()
+                }]);
+            }
+
             setIsProcessing(false);
 
             if (capturedImages.length >= 4) {
@@ -198,18 +207,30 @@ export default function EmployeeRegistrationForm() {
         setRegistrationStatus('processing');
 
         try {
-            const avgDescriptor = capturedImages[0].descriptor.map((_, i) => {
-                const sum = capturedImages.reduce((acc, img) => acc + img.descriptor[i], 0);
+            let avgDescriptor = null;
+            if (capturedImages.length > 0) {
+                /**
+                 * ===================== Method 1 =====================
+                 */
+                // const avgDescriptor = capturedImages[0].descriptor.map((_, i) => {
+                //     const sum = capturedImages.reduce((acc, img) => acc + img.descriptor[i], 0);
 
-                return sum / capturedImages.length;
-            });
+                //     return sum / capturedImages.length;
+                // });
 
-            console.log(avgDescriptor);
+                /**
+                 * ===================== Method 2 =====================
+                 */
+                avgDescriptor = capturedImages[0].descriptor.map((val, i) => {
+                    let sum = val;
+                    for (let j = 1; j < capturedImages.length; j++) {
+                        sum += capturedImages[j].descriptor[i];
+                    }
+                    return sum / capturedImages.length;
+                });
+            }
 
-            /** Simulate loading time */
-            // await new Promise(resolve => setTimeout(resolve, 2000));
-
-            /** In production, use: */
+            /** POST to api */
             const result = await fetch('/api/employee/register', {
                 method: 'POST',
                 headers: {
@@ -217,7 +238,7 @@ export default function EmployeeRegistrationForm() {
                 },
                 body: JSON.stringify({
                     ...formData,
-                    faceDescriptor: avgDescriptor
+                    faceDescriptor: Array.from(avgDescriptor)
                 }),
             });
 

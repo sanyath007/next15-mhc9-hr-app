@@ -1,9 +1,14 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import { Camera, CheckCircle, XCircle, User, Clock, AlertCircle } from 'lucide-react';
+import { Camera, CheckCircle, XCircle, User, X, AlertCircle } from 'lucide-react';
 import * as faceapi from 'face-api.js';
 
+enum ComparationStatus {
+    IDLE = "idle",
+    SUCCESS = "success",
+    ERROR = "error"
+}
 export default function CheckInPage() {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
@@ -15,6 +20,7 @@ export default function CheckInPage() {
     const [modelsLoaded, setModelsLoaded] = useState(false);
     const [detectedEmployee, setDetectedEmployee] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [compared, setCompared] = useState<ComparationStatus>(ComparationStatus.IDLE); // "idle" | "success" | "error"
 
     // Load face-api.js models
     useEffect(() => {
@@ -34,6 +40,7 @@ export default function CheckInPage() {
             // console.log('Models loaded successfully');
 
             /** In production, use: */
+            await faceapi.nets.ssdMobilenetv1.loadFromUri('/models');
             await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
             await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
             await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
@@ -59,55 +66,13 @@ export default function CheckInPage() {
                 setIsCameraActive(true);
 
                  /** Start face detection after camera is ready */
-                videoRef.current.addEventListener('loadeddata', () => {
+                videoRef.current.addEventListener('play', () => {
                     detectFaces();
                 });
             }
         } catch (err) {
             console.error('Error accessing camera:', err);
             alert('Unable to access camera. Please check permissions.');
-        }
-    };
-
-    // Detect faces in real-time
-    const detectFaces = async () => {
-        if (!modelsLoaded || !videoRef.current) return;
-
-        try {
-            /** Simulate face detection: */
-            // const simulateDetection = Math.random() > 0.3;
-            // setFaceDetected(simulateDetection);
-
-            /** In production, use: */
-            const detections = await faceapi
-                .detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions())
-                .withFaceLandmarks()
-                .withFaceDescriptors();
-
-            if (detections.length > 0) {
-                setFaceDetected(true);
-
-                /** Draw detection box on canvas */
-                const displaySize = { 
-                    width: videoRef.current.videoWidth, 
-                    height: videoRef.current.videoHeight 
-                };
-                faceapi.matchDimensions(canvasRef.current, displaySize);
-                const resizedDetections = faceapi.resizeResults(detections, displaySize);
-
-                const context = canvasRef.current.getContext('2d');
-                context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-                faceapi.draw.drawDetections(canvasRef.current, resizedDetections);
-            } else {
-                setFaceDetected(false);
-            }
-
-            /** Continue detecting */
-            if (isCameraActive && !capturedImage) {
-                setTimeout(() => detectFaces(), 100);
-            }
-        } catch (err) {
-            console.error('Error detecting face:', err);
         }
     };
 
@@ -119,6 +84,45 @@ export default function CheckInPage() {
             setStream(null);
             setIsCameraActive(false);
             setFaceDetected(false);
+        }
+    };
+
+    // Detect faces in real-time
+    const detectFaces = async () => {
+        if (!modelsLoaded || !videoRef.current) return;
+
+        try {
+            const video = videoRef.current;
+            const canvas = canvasRef.current;
+
+            /** Draw detection box on canvas */
+            const displaySize = { 
+                width: video.videoWidth, 
+                height: video.videoHeight 
+            };
+
+            faceapi.matchDimensions(canvas, displaySize);
+
+            setInterval(async () => {
+                const detections = await faceapi
+                    .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+                    .withFaceLandmarks()
+                    .withFaceDescriptors();
+
+                if (detections.length > 0) {
+                    setFaceDetected(true);
+
+                    const resizedDetections = faceapi.resizeResults(detections, displaySize);
+
+                    const context = canvas.getContext('2d');
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                    faceapi.draw.drawDetections(canvas, resizedDetections);
+                } else {
+                    setFaceDetected(false);
+                }
+            }, 100);
+        } catch (err) {
+            console.error('Error detecting face:', err);
         }
     };
 
@@ -166,6 +170,15 @@ export default function CheckInPage() {
                 });
 
                 const data = await result.json();
+                console.log(data);
+
+                /** If compareation is success */
+                if (data.success) {
+                    setCompared(ComparationStatus.SUCCESS);
+                }
+                
+                /** If compareation is failure */
+                setCompared(ComparationStatus.ERROR);
                 setDetectedEmployee(data.employee);
             }
 
@@ -213,6 +226,7 @@ export default function CheckInPage() {
                 setDetectedEmployee(null);
                 setCheckInStatus(null);
                 setIsProcessing(false);
+                setCompared(ComparationStatus.IDLE);
 
                 startCamera();
             }, 3000);
@@ -228,6 +242,7 @@ export default function CheckInPage() {
         setDetectedEmployee(null);
         setCheckInStatus(null);
         setIsProcessing(false);
+        setCompared(ComparationStatus.IDLE);
 
         startCamera();
     };
@@ -318,6 +333,20 @@ export default function CheckInPage() {
                 </div>
             )}
 
+            {/* Face recognition not found  */}
+            {compared === ComparationStatus.ERROR && !detectedEmployee && (
+                <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4 mb-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-md text-red-600 font-semibold">Employee not found!</p>
+                        </div>
+                        <div className="bg-red-600 p-2 rounded-full">
+                            <X className="w-6 h-6 text-white" />
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Instructions */}
             {!capturedImage && isCameraActive && modelsLoaded && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
@@ -381,28 +410,28 @@ export default function CheckInPage() {
             </div>
 
             {/* Info Panel */}
-            <div className="mt-8 grid grid-cols-3 gap-4">
+            <div className="mt-8 grid grid-cols-4 gap-3">
                 <div className="bg-gray-50 p-4 rounded-lg text-center">
                     <p className="text-gray-600 text-sm">Models</p>
-                    <p className="text-lg font-bold text-gray-800">
+                    <p className={`text-lg font-bold ${modelsLoaded ? 'text-green-600' : 'text-gray-600'}`}>
                         {modelsLoaded ? 'Loaded' : 'Loading'}
                     </p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg text-center">
                     <p className="text-gray-600 text-sm">Status</p>
-                    <p className="text-lg font-bold text-gray-800">
+                    <p className={`text-lg font-bold ${modelsLoaded ? 'text-green-600' : 'text-gray-600'}`}>
                         {capturedImage ? 'Ready' : 'Capturing'}
                     </p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg text-center">
                     <p className="text-gray-600 text-sm">Face Detection</p>
-                    <p className="text-lg font-bold text-gray-800">
+                    <p className={`text-lg font-bold ${modelsLoaded ? 'text-green-600' : 'text-gray-600'}`}>
                         {faceDetected ? 'Active' : 'Inactive'}
                     </p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg text-center">
                     <p className="text-gray-600 text-sm">Camera</p>
-                    <p className="text-lg font-bold text-gray-800">
+                    <p className={`text-lg font-bold ${modelsLoaded ? 'text-green-600' : 'text-gray-600'}`}>
                         {isCameraActive ? 'On' : 'Off'}
                     </p>
                 </div>

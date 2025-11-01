@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
-import { Camera, CheckCircle, XCircle, User, Clock } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { User, Clock } from 'lucide-react';
 
-export default function TimAttendanceLayout({ children}: { children: React.ReactNode }) {
+export default function TimAttendanceLayout({ children }: { children: React.ReactNode }) {
     const [currentTime, setCurrentTime] = useState(new Date());
 
     // Update time every second

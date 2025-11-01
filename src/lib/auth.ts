@@ -1,47 +1,10 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import NextAuth from 'next-auth';
-import { PrismaAdapter } from '@auth/prisma-adapter';
-import GitHub from 'next-auth/providers/github';
-import Credentials from 'next-auth/providers/credentials';
-import { PrismaClient } from '../generated/prisma/client';
-import db from './db';
-
-const adapter = PrismaAdapter(db);
+import db from '@/lib/db'; // Assume a database module is available
 
 // JWT Secret - In production, use environment variable
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
-
-export const { auth, handlers, signIn } = NextAuth({
-    adapter,
-    providers: [
-        GitHub,
-        Credentials({
-            credentials: {
-                email: {},
-                password: {}
-            },
-            authorize: async (credentials) => {
-                const user = await db.user.findUnique({
-                    where: { email: credentials.email as string },
-                });
-
-                if (!user) {
-                    throw new Error("Invalid credentials.");
-                }
-
-                
-                const isValidPassword = await verifyPassword(credentials.password as string, user.password);
-                if (!isValidPassword) {
-                    throw new Error("Invalid password.");
-                }
-
-                return user;
-            },
-        }),
-    ]
-});
 
 export interface UserPayload {
     id: string;
