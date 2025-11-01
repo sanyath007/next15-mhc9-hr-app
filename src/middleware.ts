@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken } from '@/lib/auth';
+// import { verifyToken } from '@/lib/auth';
+import { getToken } from 'next-auth/jwt';
 
 // Define protected routes
 const protectedRoutes = [
@@ -18,14 +19,17 @@ const authRoutes = [
     // '/check-in',
 ];
 
-export function middleware(request: NextRequest) {
-    const { pathname } = request.nextUrl;
+export async function middleware(req: NextRequest) {
+    const { pathname } = req.nextUrl;
+    const user = await getToken({ req, secret: process.env.AUTH_SECRET });
 
-    // Get token from cookies or Authorization header
-    const token = request.cookies.get('auth_token')?.value || 
-                    request.headers.get('authorization')?.replace('Bearer ', '');
+    /** Get token from cookies or Authorization header */
+    // const token = req.cookies.get('auth_token')?.value || 
+    //                 req.headers.get('authorization')?.replace('Bearer ', '');
 
-    const isAuthenticated = token ? true : false; //verifyToken(token) !== null
+    /** Check user is logged in or not */
+    // const isAuthenticated = token ? true : false; //verifyToken(token) !== null
+    const isAuthenticated = !!user;
 
     // Check if the current path is a protected route
     const isProtectedRoute = protectedRoutes.some(route => 
@@ -39,7 +43,7 @@ export function middleware(request: NextRequest) {
 
     // Redirect unauthenticated users from protected routes
     if (isProtectedRoute && !isAuthenticated) {
-        const loginUrl = new URL('/signin', request.url);
+        const loginUrl = new URL('/signin', req.url);
         loginUrl.searchParams.set('redirect', pathname);
 
         return NextResponse.redirect(loginUrl);
@@ -47,7 +51,7 @@ export function middleware(request: NextRequest) {
 
     // Redirect authenticated users from auth routes
     if (isAuthRoute && isAuthenticated) {
-        return NextResponse.redirect(new URL('/dashboard', request.url));
+        return NextResponse.redirect(new URL('/dashboard', req.url));
     }
 
     return NextResponse.next();
