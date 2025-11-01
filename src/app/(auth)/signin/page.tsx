@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { auth, signIn } from '@/lib/auth';
+import { auth, signIn } from '@/auth';
 import { executeAction } from '@/lib/executeAction';
 import { GithubSignIn } from '@/components/github-sign-in';
 import { Button } from '@/components/ui/button';

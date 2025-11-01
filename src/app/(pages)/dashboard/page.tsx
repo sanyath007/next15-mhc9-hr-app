@@ -1,15 +1,21 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+// import { useAuth } from '@/contexts/AuthContext';
+import { useSession } from 'next-auth/react';
+import { logout } from '@/actions/logout';
 
 export default function DashboardPage() {
-    const { user, logout } = useAuth();
+    // const { user } = useAuth();
     const router = useRouter();
+    const { data: session, status } = useSession();
+
+    console.log(session);
 
     const handleLogout = async () => {
         await logout();
-        router.push('/login');
+
+        // router.push('/login');
     };
 
     return (
@@ -29,20 +35,20 @@ export default function DashboardPage() {
                     <div className="bg-gray-50 rounded-lg p-4">
                         <h2 className="text-lg font-semibold text-gray-800 mb-3">User Information</h2>
                         <div className="space-y-2">
-                            <p><span className="font-medium">Name:</span> {user?.name}</p>
-                            <p><span className="font-medium">Username:</span> {user?.username}</p>
-                            <p><span className="font-medium">Email:</span> {user?.email}</p>
+                            <p><span className="font-medium">Name:</span> {session?.user?.name}</p>
+                            <p><span className="font-medium">Username:</span> {session?.user?.username}</p>
+                            <p><span className="font-medium">Email:</span> {session?.user?.email}</p>
                             <p><span className="font-medium">Role:</span> 
                                 <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
-                                    user?.role === 'admin' ? 'bg-red-100 text-red-800' :
-                                    user?.role === 'manager' ? 'bg-blue-100 text-blue-800' :
+                                    session?.user?.role === 'admin' ? 'bg-red-100 text-red-800' :
+                                    session?.user?.role === 'manager' ? 'bg-blue-100 text-blue-800' :
                                     'bg-green-100 text-green-800'
                                 }`}>
-                                    {user?.role}
+                                    {session?.user?.role}
                                 </span>
                             </p>
-                            {user?.departmentId && (
-                                <p><span className="font-medium">Department ID:</span> {user.departmentId}</p>
+                            {session?.user?.departmentId && (
+                                <p><span className="font-medium">Department ID:</span> {session?.user?.departmentId}</p>
                             )}
                         </div>
                     </div>
