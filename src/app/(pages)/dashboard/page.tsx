@@ -1,22 +1,13 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 // import { useAuth } from '@/contexts/AuthContext';
 import { useSession } from 'next-auth/react';
-import { logout } from '@/actions/logout';
 
 export default function DashboardPage() {
     // const { user } = useAuth();
-    const router = useRouter();
+    // const router = useRouter();
     const { data: session, status } = useSession();
-
-    console.log(session);
-
-    const handleLogout = async () => {
-        await logout();
-
-        // router.push('/login');
-    };
 
     return (
         <div className="max-w-4xl mx-auto">
