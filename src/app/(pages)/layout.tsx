@@ -1,7 +1,7 @@
 
 // import { ProtectedRoute } from '../contexts/AuthContext';
 
-import Navbar from "@/components/ui/navabar";
+import Navbar from "@/components/ui/navbar";
 
 export default function DefaultLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (

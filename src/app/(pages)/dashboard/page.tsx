@@ -54,7 +54,7 @@ export default function DashboardPage() {
                                 Check In
                             </a>
                             <a 
-                                href="/users" 
+                                href="/employee/list" 
                                 className="block w-full bg-purple-600 text-white text-center py-2 px-4 rounded-md hover:bg-purple-700 transition-colors"
                             >
                                 View Users

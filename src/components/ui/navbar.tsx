@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { logout } from '@/actions/logout';
@@ -22,43 +23,47 @@ const Navbar = () => {
 
     const menuItems = [
         {
-            label: 'Products',
+            label: 'หน้าหลัก',
+            link: "/dashboard"
+        },
+        {
+            label: 'ลงเวลา',
             submenu: [
-                { label: 'Software', link: '#' },
-                { label: 'Hardware', link: '#' },
-                {
-                    label: 'Services',
-                    submenu: [
-                        { label: 'Consulting', link: '#' },
-                        { label: 'Support', link: '#' },
-                        { label: 'Training', link: '#' }
-                    ]
-                }
+                { label: 'ลงเวลาปฏิบัติงาน', link: '/check-in' },
+                { label: 'การลงเวลาประจำวัน', link: '#' },
+                // {
+                //     label: 'Services',
+                //     submenu: [
+                //         { label: 'Consulting', link: '#' },
+                //         { label: 'Support', link: '#' },
+                //         { label: 'Training', link: '#' }
+                //     ]
+                // }
             ]
         },
         {
-            label: 'Solutions',
+            label: 'บุคลากร',
             submenu: [
-                { label: 'Enterprise', link: '#' },
-                { label: 'Small Business', link: '#' },
-                { label: 'Individual', link: '#' }
+                { label: 'รายการบุคลากร', link: '/employee/list' },
+                { label: 'ลงทะเบียนใบหน้า', link: 'employee/register' },
+                // { label: 'Individual', link: '#' }
             ]
         },
-        {
-            label: 'Resources',
-            submenu: [
-                { label: 'Documentation', link: '#' },
-                { label: 'Blog', link: '#' },
-                {
-                label: 'Support',
-                submenu: [
-                    { label: 'Help Center', link: '#' },
-                    { label: 'Community', link: '#' },
-                    { label: 'Contact Us', link: '#' }
-                ]
-                }
-            ]
-        }
+        // {
+        //     label: 'Resources',
+        //     submenu: [
+        //         { label: 'Documentation', link: '#' },
+        //         { label: 'Blog', link: '#' },
+        //         {
+        //         label: 'Support',
+        //         submenu: [
+        //             { label: 'Help Center', link: '#' },
+        //             { label: 'Community', link: '#' },
+        //             { label: 'Contact Us', link: '#' }
+        //         ]
+        //         }
+        //     ]
+        // }
     ];
 
     const handleDropdownToggle = (index) => {
@@ -87,28 +92,37 @@ const Navbar = () => {
                         <div className="flex space-x-1 relative">
                             {menuItems.map((item, index) => (
                                 <div key={index} className="relative">
-                                    <button
-                                        onClick={() => handleDropdownToggle(index)}
-                                        className="px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200 flex items-center"
-                                    >
-                                        {item.label}
-                                        <svg
-                                            className={`ml-1 w-4 h-4 transition-transform duration-200 ${
-                                                openDropdown === index ? 'rotate-180' : ''
-                                            }`}
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
+                                    {item.submenu ? (
+                                        <button
+                                            onClick={() => handleDropdownToggle(index)}
+                                            className="px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200 flex items-center"
                                         >
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </button>
+                                            {item.label}
+                                                <svg
+                                                    className={`ml-1 w-4 h-4 transition-transform duration-200 ${
+                                                        openDropdown === index ? 'rotate-180' : ''
+                                                    }`}
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            href={item.link}
+                                            className="px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200 flex items-center"
+                                        >
+                                            {item.label}
+                                        </Link>
+                                    )}
 
                                     {/* Dropdown Menu */}
-                                    {openDropdown === index && (
+                                    {item.submenu && openDropdown === index && (
                                         <div className="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg z-50 border border-gray-200">
                                             <div className="py-1">
-                                                {item.submenu.map((subitem, subIndex) => (
+                                                {item.submenu && item.submenu.map((subitem, subIndex) => (
                                                     <div key={subIndex} className="relative">
                                                         {subitem.submenu ? (
                                                             <>
@@ -162,7 +176,7 @@ const Navbar = () => {
                         </div>
 
                         {/* User Avatar */}
-                        <div className="relative border">
+                        <div className="relative">
                             <button
                                 onMouseEnter={() => setShowUserMenu(true)}
                                 onMouseLeave={() => setShowUserMenu(false)}
