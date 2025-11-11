@@ -30,7 +30,7 @@ const Navbar = () => {
             label: 'ลงเวลา',
             submenu: [
                 { label: 'ลงเวลาปฏิบัติงาน', link: '/check-in' },
-                { label: 'การลงเวลาประจำวัน', link: '#' },
+                { label: 'การลงเวลาประจำวัน', link: '/attendance' },
                 // {
                 //     label: 'Services',
                 //     submenu: [
