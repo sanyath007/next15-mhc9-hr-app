@@ -1,7 +1,7 @@
 // /api/embed/route.js
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
     try {
         // const { messages } = await req.json();
 
