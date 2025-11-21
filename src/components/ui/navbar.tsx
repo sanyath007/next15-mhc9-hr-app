@@ -6,14 +6,18 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { logout } from '@/actions/logout';
 
+type MenuItem = {
+    label: string;
+    link?: string;
+    submenu?: MenuItem[];
+};
+
 const Navbar = () => {
     const router = useRouter();
     const { data: session, status } = useSession();
-    const [openDropdown, setOpenDropdown] = useState(null);
-    const [openSubmenu, setOpenSubmenu] = useState(null);
+    const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+    const [openSubmenu, setOpenSubmenu] = useState<number | null>(null);
     const [showUserMenu, setShowUserMenu] = useState(false);
-
-    console.log(session);
 
     const handleLogout = async () => {
         await logout();
@@ -21,7 +25,7 @@ const Navbar = () => {
         // router.push('/login');
     };
 
-    const menuItems = [
+    const menuItems: MenuItem[] = [
         {
             label: 'หน้าหลัก',
             link: "/dashboard"
@@ -55,23 +59,23 @@ const Navbar = () => {
         //         { label: 'Documentation', link: '#' },
         //         { label: 'Blog', link: '#' },
         //         {
-        //         label: 'Support',
-        //         submenu: [
-        //             { label: 'Help Center', link: '#' },
-        //             { label: 'Community', link: '#' },
-        //             { label: 'Contact Us', link: '#' }
-        //         ]
+            //         label: 'Support',
+            //         submenu: [
+            //             { label: 'Help Center', link: '#' },
+            //             { label: 'Community', link: '#' },
+            //             { label: 'Contact Us', link: '#' }
+            //         ]
         //         }
         //     ]
         // }
     ];
 
-    const handleDropdownToggle = (index) => {
+    const handleDropdownToggle = (index: number) => {
         setOpenDropdown(openDropdown === index ? null : index);
         setOpenSubmenu(null);
     };
 
-    const handleSubmenuToggle = (index) => {
+    const handleSubmenuToggle = (index: number) => {
         setOpenSubmenu(openSubmenu === index ? null : index);
     };
 
@@ -111,7 +115,7 @@ const Navbar = () => {
                                         </button>
                                     ) : (
                                         <Link
-                                            href={item.link}
+                                            href={new URL(item.link || '#', 'http://localhost').pathname}
                                             className="px-4 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200 flex items-center"
                                         >
                                             {item.label}
