@@ -10,6 +10,17 @@ interface CapturedImage {
     timestamp: string;
 };
 
+type EmployeeData = {
+    firstName: string,
+    lastName: string,
+    email: string,
+    employeeId: string,
+    department: string,
+    position: string,
+    faceDescriptor: string,
+    avatarImage: string,
+}
+
 export default function EmployeeRegistrationForm() {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -21,7 +32,7 @@ export default function EmployeeRegistrationForm() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [registrationStatus, setRegistrationStatus] = useState(null);
     
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<EmployeeData>({
         firstName: '',
         lastName: '',
         email: '',
@@ -32,7 +43,7 @@ export default function EmployeeRegistrationForm() {
         avatarImage: '',
     });
 
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState<any>(null);
     const [showPreview, setShowPreview] = useState(false);
 
     useEffect(() => {
@@ -184,7 +195,17 @@ export default function EmployeeRegistrationForm() {
     };
 
     const validateForm = () => {
-        const newErrors = {};
+        const newErrors = {
+            firstName: '',
+            lastName: '',
+            email: '',
+            employeeId: '',
+            department: '',
+            position: '',
+            faceDescriptor: '',
+            avatarImage: '',
+        };
+
         if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
         if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
         if (!formData.email.trim()) {
@@ -196,7 +217,7 @@ export default function EmployeeRegistrationForm() {
         if (!formData.department.trim()) newErrors.department = 'Department is required';
         if (!formData.position.trim()) newErrors.position = 'Position is required';
         if (capturedImages.length < 3) {
-            newErrors.images = 'Please capture at least 3 photos for accurate recognition';
+            newErrors.avatarImage = 'Please capture at least 3 photos for accurate recognition';
         }
 
         setErrors(newErrors);
@@ -274,10 +295,12 @@ export default function EmployeeRegistrationForm() {
             email: '',
             employeeId: '',
             department: '',
-            position: ''
+            position: '',
+            faceDescriptor: '',
+            avatarImage: '',
         });
         setCapturedImages([]);
-        setErrors({});
+        setErrors(null);
         setRegistrationStatus(null);
         stopCamera();
     };
