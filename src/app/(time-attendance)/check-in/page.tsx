@@ -10,13 +10,13 @@ enum ComparationStatus {
     ERROR = "error"
 }
 export default function CheckInPage() {
-    const videoRef = useRef(null);
-    const canvasRef = useRef(null);
-    const [stream, setStream] = useState(null);
-    const [capturedImage, setCapturedImage] = useState(null);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const [stream, setStream] = useState<MediaStream | null>(null);
+    const [capturedImage, setCapturedImage] = useState<string | null>(null);
     const [isCameraActive, setIsCameraActive] = useState(false);
     const [faceDetected, setFaceDetected] = useState(false);
-    const [checkInStatus, setCheckInStatus] = useState(null);
+    const [checkInStatus, setCheckInStatus] = useState<string | null>(null);
     const [modelsLoaded, setModelsLoaded] = useState(false);
     const [detectedEmployee, setDetectedEmployee] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -101,7 +101,7 @@ export default function CheckInPage() {
                 height: video.videoHeight 
             };
 
-            faceapi.matchDimensions(canvas, displaySize);
+            if (canvas) faceapi.matchDimensions(canvas, displaySize);
 
             setInterval(async () => {
                 const detections = await faceapi
@@ -114,9 +114,11 @@ export default function CheckInPage() {
 
                     const resizedDetections = faceapi.resizeResults(detections, displaySize);
 
-                    const context = canvas.getContext('2d');
-                    context.clearRect(0, 0, canvas.width, canvas.height);
-                    faceapi.draw.drawDetections(canvas, resizedDetections);
+                    if (canvas) {
+                        const context = canvas.getContext('2d');
+                        context?.clearRect(0, 0, canvas.width, canvas.height);
+                        faceapi.draw.drawDetections(canvas, resizedDetections);
+                    }
                 } else {
                     setFaceDetected(false);
                 }
@@ -137,7 +139,7 @@ export default function CheckInPage() {
 
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            context?.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             const imageData = canvas.toDataURL('image/png');
             setCapturedImage(imageData);
