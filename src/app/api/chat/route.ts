@@ -81,9 +81,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
     } catch (error) {
         console.error('Chat API error:', error);
 
-        return NextResponse.json(
-            { error: 'Failed to connect to Ollama' },
-            { status: 500 }
-        );
+        // return NextResponse.json(
+        //     { error: 'Failed to connect to Ollama' },
+        //     { status: 500 }
+        // );
     }
 }
