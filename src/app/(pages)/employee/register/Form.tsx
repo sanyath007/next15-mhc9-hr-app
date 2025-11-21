@@ -30,7 +30,7 @@ export default function EmployeeRegistrationForm() {
     const [faceDetected, setFaceDetected] = useState(false);
     const [modelsLoaded, setModelsLoaded] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
-    const [registrationStatus, setRegistrationStatus] = useState(null);
+    const [registrationStatus, setRegistrationStatus] = useState<string | null>(null);
     
     const [formData, setFormData] = useState<EmployeeData>({
         firstName: '',
@@ -44,7 +44,8 @@ export default function EmployeeRegistrationForm() {
     });
 
     const [errors, setErrors] = useState<any>(null);
-    const [showPreview, setShowPreview] = useState(false);
+    const [showPreview, setShowPreview] = useState<boolean>(false);
+    const [preview, setPreview] = useState<string>('');
 
     useEffect(() => {
         loadModels();
@@ -185,7 +186,7 @@ export default function EmployeeRegistrationForm() {
         setCapturedImages(capturedImages.filter((_, i) => i !== index));
     };
 
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
 
@@ -245,7 +246,7 @@ export default function EmployeeRegistrationForm() {
                 /**
                  * ===================== Method 2 =====================
                  */
-                avgDescriptor = capturedImages[0].descriptor.map((val, i) => {
+                avgDescriptor = capturedImages[0].descriptor.map((val: any, i: number) => {
                     let sum = val;
                     for (let j = 1; j < capturedImages.length; j++) {
                         sum += capturedImages[j].descriptor[i];
@@ -579,7 +580,10 @@ export default function EmployeeRegistrationForm() {
                                             />
                                             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-opacity rounded-lg flex items-center justify-center gap-2">
                                                 <button
-                                                    onClick={() => setShowPreview(img.image)}
+                                                    onClick={() => {
+                                                    setShowPreview(true);
+                                                    setPreview(img.image);
+                                                }}
                                                     className="opacity-0 group-hover:opacity-100 p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all"
                                                 >
                                                     <Eye className="w-4 h-4" />
@@ -606,12 +610,18 @@ export default function EmployeeRegistrationForm() {
                 {showPreview && (
                     <div 
                         className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-8"
-                        onClick={() => setShowPreview(null)}
+                        onClick={() => {
+                            setShowPreview(false);
+                            setPreview('');
+                        }}
                     >
                         <div className="relative max-w-3xl max-h-full">
-                            <img src={showPreview} alt="Preview" className="max-w-full max-h-full rounded-lg" />
+                            <img src={preview} alt="Preview" className="max-w-full max-h-full rounded-lg" />
                             <button
-                                onClick={() => setShowPreview(null)}
+                                onClick={() => {
+                                    setShowPreview(false);
+                                    setPreview('');
+                                }}
                                 className="absolute top-4 right-4 p-2 bg-red-600 text-white rounded-full hover:bg-red-700"
                             >
                                 <XCircle className="w-6 h-6" />
