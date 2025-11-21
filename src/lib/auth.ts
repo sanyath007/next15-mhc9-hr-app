@@ -1,9 +1,9 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { Secret } from 'jsonwebtoken';
 import db from '@/lib/db'; // Assume a database module is available
 
 // JWT Secret - In production, use environment variable
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-in-production' as Secret;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
 export interface UserPayload {
@@ -44,7 +44,7 @@ export const verifyPassword = async (password: string, hashedPassword: string): 
 
 // JWT utilities
 export const generateToken = (payload: UserPayload): string => {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
 };
 
 export const verifyToken = (token: string): UserPayload | null => {
