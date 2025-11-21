@@ -2,9 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
     /* config options here */
-    basePath: "",
-    distDir: "build",
-    // output: "standalone",
+    basePath: "/app",
+    // distDir: "build",
+    output: "standalone",
     eslint: {
         ignoreDuringBuilds: true,
     },
