@@ -21,7 +21,6 @@ export default function DashboardPage() {
                         <h2 className="text-lg font-semibold text-gray-800 mb-3">User Information</h2>
                         <div className="space-y-2">
                             <p><span className="font-medium">Name:</span> {session?.user?.name}</p>
-                            <p><span className="font-medium">Username:</span> {session?.user?.username}</p>
                             <p><span className="font-medium">Email:</span> {session?.user?.email}</p>
                             <p><span className="font-medium">Role:</span> 
                                 <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
@@ -32,9 +31,9 @@ export default function DashboardPage() {
                                     {session?.user?.role}
                                 </span>
                             </p>
-                            {session?.user?.departmentId && (
+                            {/* {session?.user?.departmentId && (
                                 <p><span className="font-medium">Department ID:</span> {session?.user?.departmentId}</p>
-                            )}
+                            )} */}
                         </div>
                     </div>
 
