@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, ChangeEvent } from 'react';
 import { Camera, UserPlus, XCircle, CheckCircle, AlertCircle, Trash2, Eye } from 'lucide-react';
 import * as faceapi from 'face-api.js';
 
@@ -11,9 +11,9 @@ interface CapturedImage {
 };
 
 export default function EmployeeRegistrationForm() {
-    const videoRef = useRef(null);
-    const canvasRef = useRef(null);
-    const [stream, setStream] = useState(null);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const [stream, setStream] = useState<MediaStream | null>(null);
     const [capturedImages, setCapturedImages] = useState<CapturedImage[]>([]);
     const [isCameraActive, setIsCameraActive] = useState(false);
     const [faceDetected, setFaceDetected] = useState(false);
@@ -68,7 +68,7 @@ export default function EmployeeRegistrationForm() {
                 setStream(mediaStream);
                 setIsCameraActive(true);
 
-                videoRef.current.addEventListener('loadeddata', () => {
+                videoRef.current.addEventListener('play', () => {
                     detectFaces();
                 });
             }
@@ -110,12 +110,15 @@ export default function EmployeeRegistrationForm() {
                     width: videoRef.current.videoWidth, 
                     height: videoRef.current.videoHeight 
                 };
-                faceapi.matchDimensions(canvasRef.current, displaySize);
-                const resizedDetections = faceapi.resizeResults(detections, displaySize);
 
-                const context = canvasRef.current.getContext('2d');
-                context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-                faceapi.draw.drawDetections(canvasRef.current, resizedDetections);
+                if (canvasRef.current) {
+                    faceapi.matchDimensions(canvasRef.current, displaySize);
+                    const resizedDetections = faceapi.resizeResults(detections, displaySize);
+    
+                    const context = canvasRef.current.getContext('2d');
+                    context?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+                    faceapi.draw.drawDetections(canvasRef.current, resizedDetections);
+                }
             } else {
                 setFaceDetected(false);
             }
@@ -140,7 +143,7 @@ export default function EmployeeRegistrationForm() {
 
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            context?.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             const imageData = canvas.toDataURL('image/png');
 
@@ -167,11 +170,11 @@ export default function EmployeeRegistrationForm() {
         }
     };
 
-    const removeImage = (index) => {
+    const removeImage = (index: number) => {
         setCapturedImages(capturedImages.filter((_, i) => i !== index));
     };
 
-    const handleInputChange = (e) => {
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
 
