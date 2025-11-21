@@ -1,4 +1,5 @@
 import LoginForm from './Form';
+import { Suspense } from 'react';
 
 export default function LoginPage() {
     return (
@@ -6,7 +7,9 @@ export default function LoginPage() {
             <div className='w-full max-w-md bg-white rounded-lg shadow-md p-8'>
                 <h1 className="text-2xl font-bold text-center mb-6 text-gray-900">Sign In</h1>
 
-                <LoginForm />
+                <Suspense fallback={<div>Loading login form...</div>}>
+                    <LoginForm />
+                </Suspense>
 
                 <div className="mt-6 text-center">
                     <div className="text-sm text-gray-600">
