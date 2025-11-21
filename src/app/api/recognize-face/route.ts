@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
         // Find the best match using Euclidean distance
         const matches = employees.map(emp => ({
             ...emp,
-            distance: faceapi.euclideanDistance(descriptor, emp.faceDescriptor)
+            distance: faceapi.euclideanDistance(descriptor, emp.faceDescriptor as number[])
         }));
 
         const bestMatch = matches.reduce((min, curr) => curr.distance < min.distance ? curr : min);
