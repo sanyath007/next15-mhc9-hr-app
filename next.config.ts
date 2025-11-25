@@ -1,17 +1,17 @@
 import type { NextConfig } from "next";
-import { PHASE_DEVELOPMENT_SERVER } from 'next/constants'
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 
-// const isDev =  phase === PHASE_DEVELOPMENT_SERVER;
+export default (nextPhase: string) => {
+    const nextConfig: NextConfig = {
+        /* config options here */
+        // basePath: "/app",
+        // distDir: "build",
+        output: "standalone",
+        assetPrefix: nextPhase === PHASE_DEVELOPMENT_SERVER ? "" : "/app/",
+        eslint: {
+            ignoreDuringBuilds: true,
+        },
+    };
 
-const nextConfig: NextConfig = {
-    /* config options here */
-    basePath: "/app",
-    // distDir: "build",
-    output: "standalone",
-    // assetPrefix: isDev ? undefined : '/app/',
-    eslint: {
-        ignoreDuringBuilds: true,
-    },
-};
-
-export default nextConfig;
+    return nextConfig;
+}
