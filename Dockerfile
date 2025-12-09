@@ -19,6 +19,9 @@ WORKDIR /app
 COPY --from=builder /app/.next/standalone ./
 # Copy public and static directories
 COPY --from=builder /app/public ./public
+# Copy static output from the builder stage
+COPY --from=builder /app/.next/static ./public/_next/static
+EXPOSE 3000
 # Optionally install sharp for performant image optimization (if using next/image)
 # RUN npm install sharp
 

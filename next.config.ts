@@ -7,7 +7,7 @@ export default (nextPhase: string) => {
         // basePath: "/app",
         // distDir: "build",
         output: "standalone",
-        assetPrefix: nextPhase === PHASE_DEVELOPMENT_SERVER ? "" : "/app/",
+        // assetPrefix: nextPhase === PHASE_DEVELOPMENT_SERVER ? "" : "/app/",
         eslint: {
             ignoreDuringBuilds: true,
         },
